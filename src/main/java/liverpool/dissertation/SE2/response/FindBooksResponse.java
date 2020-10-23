@@ -1,16 +1,18 @@
 package liverpool.dissertation.SE2.response;
 
-import java.util.ArrayList;
-
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import liverpool.dissertation.SE2.entity.Book;
 
 public class FindBooksResponse {
 	
 	private boolean success;
 	private String status;
+	int count;
 	
-	private List<Book> books = new ArrayList<Book>();
+	private Set<Book> books = new HashSet<Book>();
 
 	public boolean isSuccess() {
 		return success;
@@ -28,11 +30,19 @@ public class FindBooksResponse {
 		this.status = status;
 	}
 
-	public List<Book> getBooks() {
+	public Set<Book> getBooks() {
 		return books;
 	}
 
-	public void setBooks(List<Book> books) {
+	public void setBooks(Set<Book> books) {
 		this.books = books;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
 	}
 }

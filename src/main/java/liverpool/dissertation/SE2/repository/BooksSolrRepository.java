@@ -14,8 +14,7 @@ public interface BooksSolrRepository extends SolrCrudRepository<BookDocument, In
 	
 	BookDocument findBySolrId(Integer id);
 	
-	@Query(requestHandler="/spell", value="TITLE:*?0*")
-	@Spellcheck(count=5, extendedResults=true)
+	@Query("TITLE:*?0*")
 	Page<BookDocument> findByTitle(String searchTerm, Pageable pageable);
 	
 	@Query("DB_ID:*?0*")

@@ -1,9 +1,12 @@
 package liverpool.dissertation.SE2.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Book {
@@ -12,11 +15,11 @@ public class Book {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
 	
+	@Column(length=300)
 	private String title;
-	private String author;
 	
-	private String encryptionKey;
-	private String encryptionSalt;
+	@JsonIgnore
+	private String encryptionIV;
 
 	
 	public long getId() {
@@ -25,6 +28,7 @@ public class Book {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
 	public String getTitle() {
 		return title;
 	}
@@ -32,29 +36,15 @@ public class Book {
 		this.title = title;
 	}
 	
-	public String getAuthor() {
-		return author;
+	public String getEncryptionIV() {
+		return encryptionIV;
 	}
-	public void setAuthor(String author) {
-		this.author = author;
+	public void setEncryptionIV(String encryptionIV) {
+		this.encryptionIV = encryptionIV;
 	}
 
-	public String getEncryptionKey() {
-		return encryptionKey;
-	}
-	public void setEncryptionKey(String encryptionKey) {
-		this.encryptionKey = encryptionKey;
-	}
-	
-	public String getEncryptionSalt() {
-		return encryptionSalt;
-	}
-	public void setEncryptionSalt(String encryptionSalt) {
-		this.encryptionSalt = encryptionSalt;
-	}
-	
 	@Override
 	public String toString() {
-		return "ID = \t" + id +  " & Title = \t" + title + "\t\t & Author = \t" + author;
+		return "ID = \t" + id +  " & Title = \t" + title;
 	}
 }

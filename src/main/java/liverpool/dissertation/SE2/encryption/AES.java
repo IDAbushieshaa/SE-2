@@ -1,7 +1,9 @@
 package liverpool.dissertation.SE2.encryption;
 
+import java.nio.charset.Charset;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -10,26 +12,44 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.lang3.RandomStringUtils;
-
 public class AES {
 	
-	public static String getRandomEncryptionSecret() {
-		return RandomStringUtils.randomAlphanumeric(20);
-	}
-
-    public static String encrypt(String strToEncrypt, String secret, String salt) {
-        try {
+	private static SecretKeySpec secretKey = null;
+	private static Cipher cipher =  null;
+	
+	private static void initializeSecretKey() throws Exception {
+		if(AES.secretKey == null) {
             byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            
+            String secret = "SE2KeySecret";
+            String salt = "SE2KeySalt";
+            
             IvParameterSpec ivspec = new IvParameterSpec(iv);
 
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             KeySpec spec = new PBEKeySpec(secret.toCharArray(), salt.getBytes(), 65536, 256);
             SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+            AES.secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
+		}
+	}
+	
+	public static String generateEncryptionIV() {
+		byte[] iv = new byte[16];
+		new Random().nextBytes(iv);
+		return Base64.getEncoder().encodeToString(iv);
+	}
+	
+	
+	private static void initializeCipher() throws Exception {
+		if(AES.cipher == null) 
+			cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+	}
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
+    public static String encrypt(String strToEncrypt, byte[] iv) {
+        try {
+        	AES.initializeSecretKey();
+        	AES.initializeCipher();
+            AES.cipher.init(Cipher.ENCRYPT_MODE, AES.secretKey, new IvParameterSpec(iv));
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         }
         catch (Exception e) {
@@ -38,25 +58,35 @@ public class AES {
         return null;
     }
 
-    public static String decrypt(String strToDecrypt, String secret, String salt) {
+    public static String decrypt(String strToDecrypt, byte[] iv) {
         try {
-            byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            IvParameterSpec ivspec = new IvParameterSpec(iv);
-
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            KeySpec spec = new PBEKeySpec(secret.toCharArray(), salt.getBytes(), 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKeySpec secretKey = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
+        	AES.initializeSecretKey();
+        	AES.initializeCipher();
+            AES.cipher.init(Cipher.DECRYPT_MODE, AES.secretKey, new IvParameterSpec(iv));
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         }
         catch (Exception e) {
             System.out.println("Error while decrypting: " + e.toString());
         }
         return null;
-    }
+    } 
+    
+    
+    public static void main(String[] args) {
+    	
+//    	String iv = generateEncryptionIV();
+    	String iv = "EMoVxaaK2apU00iVQ1BVEg==";
+    	
+    	byte[] ivByte = Base64.getDecoder().decode(iv);
+    	
+    	System.out.println(ivByte.length);
 
+        
+    }
+    
+    
+    
+    
+    
 }
 

@@ -1,8 +1,7 @@
 package liverpool.dissertation.SE2.document;
 
-import org.springframework.data.annotation.Id;
-
 import org.apache.solr.client.solrj.beans.Field;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.Indexed;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
@@ -14,15 +13,12 @@ public class BookDocument {
 	private String solrId;
 	
 	
-	@Indexed(name="TITLE", type="string")
+	@Indexed(name="TITLE", type="bookTitle")
 	private String title;
 	
 	
 	@Field(value="DB_ID")
 	private String databaseId;
-	
-	@Field(value="ENCRYPTION_KEY")
-	private String encryptionKey;
 	
 	@Field(value="ENCRYPTION_IV")
 	private String encryptionSalt;
@@ -34,7 +30,6 @@ public class BookDocument {
 	public void setSolrId(String solrId) {
 		this.solrId = solrId;
 	}
-
 
 	public String getTitle() {
 		return title;
@@ -51,14 +46,6 @@ public class BookDocument {
 		this.databaseId = databaseId;
 	}
 	
-	
-	public String getEncryptionKey() {
-		return encryptionKey;
-	}
-	public void setEncryptionKey(String encryptionKey) {
-		this.encryptionKey = encryptionKey;
-	}
-	
 	public String getEncryptionSalt() {
 		return encryptionSalt;
 	}
@@ -69,5 +56,26 @@ public class BookDocument {
 	@Override
 	public String toString() {
 		return "Database ID = " + databaseId + " & solrId = " + solrId;
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		
+		if(object == null)
+			return false;
+		
+		if(object instanceof BookDocument == false)
+			return false;
+		
+		if(this.databaseId == null)
+			return false;
+		
+		BookDocument otherObject = (BookDocument) object;
+		return this.databaseId.equalsIgnoreCase(otherObject.getDatabaseId());
+	}
+	
+	@Override
+	public int hashCode() {
+		return databaseId.hashCode();
 	}
 }

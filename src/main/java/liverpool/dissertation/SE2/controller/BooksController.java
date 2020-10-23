@@ -1,6 +1,7 @@
 package liverpool.dissertation.SE2.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,13 @@ import liverpool.dissertation.SE2.service.BooksService;
 @RestController
 @RequestMapping(path="/books")
 public class BooksController {
+	
+	
+	
+	public static void main(String[] args) {
+		
+	}
+	
 	
 	@Autowired
 	BooksService booksService;
@@ -38,11 +46,12 @@ public class BooksController {
 	
 	@PostMapping(path = "/findBooksByTitle", consumes = "application/json", produces = "application/json")
 	public  FindBooksResponse findBooks(@RequestBody FindBooksCommand command) {
-		List<Book> result = booksService.findBooksByTitle(command.getSearchTerm(), 100);
+		Set<Book> result = booksService.findBooksByTitle(command.getSearchTerm(), 500);
 		FindBooksResponse response = new FindBooksResponse();
 		response.setBooks(result);
 		response.setStatus("200");
 		response.setSuccess(true);
+		response.setCount(result.size());
 		return response;
 	}
 	
